@@ -14,7 +14,7 @@ dependencies = [
 
 [[package]]
 name = "ma734"
-version = "0.0.1"
+version = "0.0.2"
 dependencies = [
  "embedded-hal",
 ]

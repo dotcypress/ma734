@@ -46,22 +46,29 @@ where
     }
 
     /// Read register
-    pub fn read_register(mut self, reg: u8, val: u8) -> Result<u8, Error<SPI>> {
-        let mut scratch = [0x40 | (reg & 0x1f), val, 0, 0];
+    pub fn read_register(mut self, reg: u8) -> Result<u8, Error<SPI>> {
+        let mut scratch = [0x40 | (reg & 0x1f), 0, 0, 0];
         self.tx(|spi| spi.transfer(&mut scratch))?;
         Ok(scratch[3])
     }
 
     /// Write register
-    pub fn write_register(mut self, reg: u8) -> Result<u8, Error<SPI>> {
-        let mut scratch = [0x80 | (reg & 0x1f), 0, 0, 0];
+    pub fn write_register(mut self, reg: u8, val: u8) -> Result<u8, Error<SPI>> {
+        let mut scratch = [0x80 | (reg & 0x1f), val, 0, 0];
         self.tx(|spi| spi.transfer(&mut scratch))?;
         Ok(scratch[3])
     }
 
-    /// Store All Registers to the NVM
+    /// Store Register into the NVM
+    pub fn store_register_into_nvm(mut self, reg: u8) -> Result<(), Error<SPI>> {
+        let mut scratch = [0xe0 | (reg & 0x1f), 0, 0, 0];
+        self.tx(|spi| spi.transfer(&mut scratch))?;
+        Ok(())
+    }
+
+    /// Store All Registers into the NVM
     pub fn store_all_registers_into_nvm(mut self) -> Result<(), Error<SPI>> {
-        let mut scratch = [0xc0, 0, 0];
+        let mut scratch = [0xc0, 0, 0, 0];
         self.tx(|spi| spi.transfer(&mut scratch))?;
         Ok(())
     }

@@ -1,6 +1,6 @@
 [package]
 name = "ma734"
-version = "0.0.1"
+version = "0.0.2"
 authors = ["Vitaly Domnikov <oss@vitaly.codes>"]
 edition = "2018"
 documentation = "https://docs.rs/ma734"
