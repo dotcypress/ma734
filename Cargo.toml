@@ -1,12 +1,12 @@
 [package]
 name = "ma734"
-version = "0.0.2"
+version = "0.1.0"
 authors = ["Vitaly Domnikov <oss@vitaly.codes>"]
 edition = "2018"
 documentation = "https://docs.rs/ma734"
 repository = "https://github.com/dotcypress/ma734"
 license = "MIT/Apache-2.0"
-description = "Platform agnostic Rust driver for the ma734, digital angle sensor that detects the absolute angular position of a permanent magnet"
+description = "Platform agnostic Rust driver for the MA734, digital angle sensor that detects the absolute angular position of a permanent magnet"
 readme = "README.md"
 keywords = ["ma734", "driver", "embedded-hal-driver"]
 categories = ["embedded", "hardware-support", "no-std"]
