@@ -39,52 +39,46 @@ where
     }
 
     /// Read current angle.
-    pub fn read_angle(mut self) -> Result<u16, Error<SPI>> {
+    pub fn read_angle(&mut self) -> Result<u16, Error<SPI>> {
         let mut scratch = [0; 2];
         self.tx(|spi| spi.transfer(&mut scratch))?;
         Ok(u16::from_be_bytes(scratch))
     }
 
-    /// Read register
-    pub fn read_register(mut self, reg: u8) -> Result<u8, Error<SPI>> {
-        let mut scratch = [0x40 | (reg & 0x1f), 0, 0, 0];
-        self.tx(|spi| spi.transfer(&mut scratch))?;
-        Ok(scratch[3])
+    /// Write register
+    pub fn write_register(&mut self, reg: u8, val: u8) -> Result<u8, Error<SPI>> {
+        self.cmd(0x80 | (reg & 0x1f), val).map(|resp| resp[3])
     }
 
-    /// Write register
-    pub fn write_register(mut self, reg: u8, val: u8) -> Result<u8, Error<SPI>> {
-        let mut scratch = [0x80 | (reg & 0x1f), val, 0, 0];
-        self.tx(|spi| spi.transfer(&mut scratch))?;
-        Ok(scratch[3])
+    /// Read register
+    pub fn read_register(&mut self, reg: u8) -> Result<u8, Error<SPI>> {
+        self.cmd(0x40 | (reg & 0x1f), 0x0).map(|resp| resp[3])
     }
 
     /// Store Register into the NVM
-    pub fn store_register_into_nvm(mut self, reg: u8) -> Result<(), Error<SPI>> {
-        let mut scratch = [0xe0 | (reg & 0x1f), 0, 0, 0];
-        self.tx(|spi| spi.transfer(&mut scratch))?;
-        Ok(())
+    pub fn store_register_into_nvm(&mut self, reg: u8) -> Result<(), Error<SPI>> {
+        self.cmd(0xe0 | (reg & 0x1f), 0x0).map(|_| ())
     }
 
     /// Store All Registers into the NVM
-    pub fn store_all_registers_into_nvm(mut self) -> Result<(), Error<SPI>> {
-        let mut scratch = [0xc0, 0, 0, 0];
-        self.tx(|spi| spi.transfer(&mut scratch))?;
-        Ok(())
+    pub fn store_all_registers_into_nvm(&mut self) -> Result<(), Error<SPI>> {
+        self.cmd(0xc0, 0x0).map(|_| ())
     }
 
     /// Restore All Registers from the NVM
-    pub fn restore_all_registers_from_nvm(mut self) -> Result<(), Error<SPI>> {
-        let mut scratch = [0xa0, 0, 0, 0];
-        self.tx(|spi| spi.transfer(&mut scratch))?;
-        Ok(())
+    pub fn restore_all_registers_from_nvm(&mut self) -> Result<(), Error<SPI>> {
+        self.cmd(0xa0, 0x0).map(|_| ())
     }
 
     /// Clear error flags
-    pub fn clear_error_flags(mut self) -> Result<(), Error<SPI>> {
-        let mut scratch = [0x20, 0, 0, 0];
+    pub fn clear_error_flags(&mut self) -> Result<(), Error<SPI>> {
+        self.cmd(0x20, 0x00).map(|_| ())
+    }
+
+    fn cmd(&mut self, cmd: u8, arg: u8) -> Result<[u8; 4], Error<SPI>> {
+        let mut scratch = [cmd, arg, 0, 0];
         self.tx(|spi| spi.transfer(&mut scratch))?;
-        Ok(())
+        Ok(scratch)
     }
 
     fn tx<RES, TX: FnOnce(&mut SPI) -> Result<RES, SPI::Error>>(
