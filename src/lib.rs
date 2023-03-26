@@ -121,7 +121,7 @@ where
     }
 
     /// Set magnetic field thresholds
-    pub fn set_magnetic_field_thresholds(
+    pub fn set_magnetic_thresholds(
         &mut self,
         mft: MagneticFieldThresholds,
     ) -> Result<(), Error<SPI>> {
